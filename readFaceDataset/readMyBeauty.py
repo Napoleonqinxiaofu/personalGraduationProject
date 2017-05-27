@@ -9,10 +9,12 @@ description : 读取女明星人脸数据库
 import os
 import cv2
 import pickle
+import sys
+sys.path.append('../tool')
+import imtool
 
-def getFacesData(folder, isDebug=False):
+def getFacesData(folder, isDebug=False, width=200):
 	trainData, trainLabel, testData, testLabel = [], [], [], []
-	IMAGE_SIZE = (60, 60)
 	#进入所有的人脸的目录
 	for image in os.listdir(folder):
 		currentPersonLabel = int(image)
@@ -22,6 +24,7 @@ def getFacesData(folder, isDebug=False):
 		for item in os.listdir(os.path.join(folder, image)):
 			count += 1
 			img = cv2.imread(os.path.join(folder, image, item), 3).astype('uint8')
+			img = imtool.resize(img, width=width)
 			if isDebug:
 				print("Processing %s" % (os.path.join(folder, image, item)))
 			# 指定训练图像的数量为20张,也为测试数据多加上几个图片

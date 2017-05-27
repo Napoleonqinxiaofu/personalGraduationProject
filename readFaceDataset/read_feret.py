@@ -10,9 +10,9 @@ from PIL import Image
 import os
 import pickle
 
-IMAGE_SIZE = (90, 90)
 
-def getFacesData(folder, number=50, isDebug=False):
+
+def getFacesData(folder, number=50, isDebug=False, IMAGE_SIZE = (90, 90)):
     """
     从feret数据库提取人脸数据，每一个人的第10张图片作为测试图片
     :param folder: att_faces人脸数据库的路径

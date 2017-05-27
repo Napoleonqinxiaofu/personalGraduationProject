@@ -14,7 +14,7 @@ from PIL import Image
 import os
 import pickle
 
-def getFacesData( folderPath, testExtention, isDebug=False ):
+def getFacesData( folderPath, testExtention, isDebug=False, IMAGE_SIZE = (90, 90) ):
     """
     获取yalefaces数据库的图像
     :param folderPath: 数据库的目录
@@ -32,7 +32,7 @@ def getFacesData( folderPath, testExtention, isDebug=False ):
     testImages = []
     labels = []
     testLabel = []
-    IMAGE_SIZE = (90, 90)
+    
     for filename in imagesPath:
         if isDebug:
             print(filename)
@@ -43,12 +43,14 @@ def getFacesData( folderPath, testExtention, isDebug=False ):
         rects = faceCascade.detectMultiScale(img, 1.1, 3)
         for r in rects:
             x, y, w, h = r
+            image = cv2.resize(img[y:y+h, x:x+w], IMAGE_SIZE)
+            label = int(os.path.split(filename)[1].split(".")[0].replace("subject", ""))
             if testExtention in filename:
-                testImages.append( cv2.resize(img[y:y+h, x:x+w], IMAGE_SIZE) )
-                testLabel.append(int(os.path.split(filename)[1].split(".")[0].replace("subject", "")))
+                testImages.append( image )
+                testLabel.append( label )
             else:
-                images.append( cv2.resize(img[y:y+h, x:x+w], IMAGE_SIZE) )
-                labels.append( int(os.path.split(filename)[1].split(".")[0].replace("subject", "") ) )
+                images.append( image )
+                labels.append( label )
 
     return images, labels, testImages, testLabel
 

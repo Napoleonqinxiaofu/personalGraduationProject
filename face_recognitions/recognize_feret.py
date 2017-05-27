@@ -1,7 +1,7 @@
 #_*_coding:utf-8_*_
 import cv2
 import numpy
-import face_recognition as face
+# import face_recognition as face
 import sys
 sys.path.append('../readFaceDataset/')
 import read_feret as RF

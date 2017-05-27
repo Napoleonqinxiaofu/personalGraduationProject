@@ -6,35 +6,59 @@ weChat:echopi31415927
 date : 2017/3/26-11:14
 description : 对比两张照片
 """
-import face_recognition as face
 import cv2
 import numpy
+import argparse
 
 import os
+import sys
+sys.path.append('../LBP')
+import distance
+
 import dlib
 
 import api
 
-known = '../image/'
+import Face
 
-train = []
-count = 0
-for image in os.listdir(known):
+parser = argparse.ArgumentParser()
+parser.add_argument('trainFolder', help='Please provide the train folder name.')
+parser.add_argument('testImagePath', help="Please provide the test image path.")
+parser.add_argument('personNumber', help="Please provide the person number you want to train!")
+parser.add_argument('distanceType', help="Please provide the method name.")
+args = parser.parse_args()
 
-	image = face.load_image_file(os.path.join(known, image))
-	face_locations = face.face_locations(image)
-	if len(face_locations) < 1:
-		continue
-	count += 1
-	if count > 6:
-		break
+if args.distanceType == 'L1':
+	distanceMethod = distance.L1
+elif args.distanceType == 'Euler':
+	distanceMethod = distance.Euler
+elif args.distanceType == 'cosine':
+	distanceMethod = distance.cosine
+else:
+	distanceMethod = None
 
-	train.extend([face.face_encodings(image)[0]])
-results = api.find_similar_face(train, train[-1])
-print(results)
+Max_Image_Size = (500, 500)
 
-# 	top, right, bottom, left = face_locations[0]
-# 	cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)
-# 	cv2.imshow('img', image)
-# 	cv2.waitKey(300) & 0XFF
-# cv2.destroyAllWindows()
+# Face 类的实例
+faceHandle = Face.Face(distance=distanceMethod)
+
+# 开始训练图像
+faceHandle.train(args.trainFolder, isContainFolder=True, isDebug=True, personNumber=int(args.personNumber), imagePerPerson=6)
+#测试图像
+
+testImage = cv2.imread(args.testImagePath)
+result = faceHandle.predict(testImage)
+print(result)
+
+
+#result : [[rects], [scores], [labels]]
+for r in result:
+	rect = r[0]
+	scores = r[1]
+	labels = r[2]
+	for image in labels:
+		cv2.imshow(image, cv2.imread(image) )
+	cv2.rectangle(testImage, rect[:2], rect[2:], (255, 0, 0), 2)
+	cv2.imshow('testImage', testImage)
+	cv2.waitKey(0) & 0XFF
+cv2.destroyAllWindows()

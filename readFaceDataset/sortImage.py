@@ -34,11 +34,11 @@ def renameFile(oldFileName, newFileName):
 def judgeFaceNum(imgPath, faceDetector):
     print(imgPath)
     try:
-        img = cv2.imread(imgPath, 1)
+        img = cv2.imread(imgPath)
         # The 1 in the second argument indicates that we should upsample the image
         # 1 time.  This will make everything bigger and allow us to detect more
         # faces.
-        dets = faceDetector(img, 2)
+        dets = faceDetector(img, 1)
     except Exception as err:
         print(err)
         return True
@@ -51,7 +51,8 @@ def deleteFile(fileName):
 def isImage(fileName):
     return fileName.endswith('jpg')
 
-def waorForEverySingleFile(folder, isDebug=False):
+# 这才是主函数
+def swapForEverySingleFile(folder, isDebug=False):
     # 记录当前遍历的是第几个目录
     folderCount = 1
     for innerFolder in os.listdir(folder):
@@ -59,7 +60,7 @@ def waorForEverySingleFile(folder, isDebug=False):
 
         # 不是文件夹的时候删掉该文件
         if not os.path.isdir(folderName):
-            deleteFile(folderName)
+            #deleteFile(folderName)
             continue
 
         if  isDebug:
@@ -78,7 +79,7 @@ def waorForEverySingleFile(folder, isDebug=False):
             os.chmod(fileName, stat.S_IWRITE)
             #print(judgeFaceNum(fileName, detector))
             #当当前文件不是jpg文件和当前图片内有多张人脸的时候就删除掉
-            if not isImage(fileName) or judgeFaceNum(fileName, detector):
+            if not isImage(fileName):# or judgeFaceNum(fileName, detector):
                 deleteFile(fileName)
             else:
                 renameFile(fileName, newFileName)
@@ -109,5 +110,5 @@ def makeDirNameToNumber(folder, isDebug=False):
 
 
 if __name__ == '__main__':
-    folder = '../myData/'
-    # waorForEverySingleFile(folder, True)
+    folder = '../image/train'
+    swapForEverySingleFile(folder, True)

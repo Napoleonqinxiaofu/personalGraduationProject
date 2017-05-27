@@ -10,8 +10,8 @@ import numpy
 import cv2
 import pickle
 
-IMAGE_SIZE = (90, 90)
-def getFacesData(folder, isDebug=False):
+
+def getFacesData(folder, isDebug=False, IMAGE_SIZE = (90, 90)):
     """
     从att_faces数据空提取人脸数据，每一个人的第10张图片作为测试图片
     :param folder: att_faces人脸数据库的路径
